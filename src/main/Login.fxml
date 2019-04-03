@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="424.0" prefWidth="656.0" style="-fx-background-color: #818084;" stylesheets="@../resources/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.LoginController">
+   <children>
+      <Pane layoutX="34.0" layoutY="32.0" prefHeight="181.0" prefWidth="254.0">
+         <children>
+            <ImageView fitHeight="50.0" fitWidth="60.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Users/BananBanan/Desktop/finanse/finanseIkona.png" />
+               </image>
+            </ImageView>
+            <Text fill="#00b3ca" layoutX="14.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" text="FinanceManager">
+               <font>
+                  <Font name="Century Gothic" size="28.0" />
+               </font>
+            </Text>
+         </children>
+      </Pane>
+      <Line endX="-4.0" endY="218.0" layoutX="328.0" layoutY="163.0" startX="-4.0" startY="-136.0" />
+      <JFXButton layoutX="375.0" layoutY="175.0" onAction="#login" prefHeight="37.0" prefWidth="91.0" text="Login">
+         <graphic>
+            <FontAwesomeIconView glyphName="KEY" />
+         </graphic>
+      </JFXButton>
+      <JFXPasswordField fx:id="passwordField" focusColor="BLACK" labelFloat="true" layoutX="375.0" layoutY="114.0" onAction="#login" prefWidth="240.0" promptText="What is your password ?">
+         <font>
+            <Font name="Century Gothic" size="20.0" />
+         </font>
+      </JFXPasswordField>
+      <JFXTextField fx:id="nameTextField" focusColor="BLACK" labelFloat="true" layoutX="375.0" layoutY="43.0" prefHeight="39.0" prefWidth="240.0" promptText="What is your username ?">
+         <font>
+            <Font name="Century Gothic" size="20.0" />
+         </font>
+      </JFXTextField>
+      <JFXCheckBox fx:id="keepMeLogged" layoutX="375.0" layoutY="228.0" styleClass="checkbox" text="Keep me logged in">
+         <font>
+            <Font name="Century Gothic" size="15.0" />
+         </font>
+      </JFXCheckBox>
+      <JFXButton layoutX="504.0" layoutY="175.0" onAction="#addNewUser" text="New user">
+         <graphic>
+            <FontAwesomeIconView glyphName="USER_PLUS" />
+         </graphic>
+      </JFXButton>
+      <JFXButton layoutX="413.0" layoutY="325.0" onAction="#reset" prefHeight="37.0" prefWidth="168.0" style="-fx-background-color: #818084 #818084;" text="Forgot password?" underline="true" />
+      <JFXButton contentDisplay="RIGHT" layoutX="14.0" layoutY="373.0" onAction="#exit" style="-fx-background-color: #818084 #818084;" text="Exit" underline="true">
+         <graphic>
+            <FontAwesomeIconView glyphName="SIGN_OUT" size="16" />
+         </graphic>
+      </JFXButton>
+   </children>
+</AnchorPane>

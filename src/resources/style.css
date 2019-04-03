@@ -1,0 +1,102 @@
+*{
+	-fx-primary: #818084;
+	-fx-primarytext: #001a2d;
+	-fx-blue: #00BCD4;
+}
+
+.root{
+	-fx-background-color: -fx-primary;
+}
+.button{
+    -fx-text-fill: #000000;
+    -fx-background-color: linear-gradient(#a9d2d3,#637c7c);
+    -fx-font-size: 12.0pt;
+}
+.glyph-icon
+{
+    -fx-fill: -fx-primarytext;
+    -fx-font-family: "FontAwesome";
+}
+.checkbox{
+	-jfx-checked-color: -fx-blue;
+}
+.invalid-input{
+	-jfx-unfocus-color: #c90000;
+    -jfx-focus-color: #c90000; 
+}
+.valid-input{
+	-jfx-unfocus-color: #009b0c;
+    -jfx-focus-color: #009b0c; 
+}
+.jfx-combo-box{
+	-jfx-focus-color: BLACK;
+	
+}
+
+.menu{
+	-fx-background-color:#363638;
+	-fx-base:#363638;
+}
+.jfx-hamburger-icon{
+	-fx-spacing:6.0;
+}
+.jfx-hamburger-icon BorderPane{
+	-fx-background-color: #363638;
+	-fx-background-radius:6.0px;
+}
+.jfx-listview{
+	-fx-background-color: #a4aaaa;
+}
+.exit{
+	-fx-fill: #c60000;
+    -fx-font-family: "FontAwesome";
+}
+.table-view{
+    -fx-background-color: derive(-fx-primary, 25.0%);
+    -fx-font-size: 16.0px; 
+    -fx-border-color: #505151;
+}
+.table-view:focused{
+    -fx-background-color: derive(-fx-primary, 20.0%);
+}
+.table-view .column-header-background{
+    -fx-background-color: #637c7c;
+}
+.table-view .column-header-background .label{
+    -fx-background-color: transparent;
+    -fx-text-fill: #2e302f;
+}
+.table-view .column-header {
+    -fx-background-color: transparent;
+}
+.table-view .table-cell{
+    -fx-text-fill: #2e302f;
+}
+.table-row-cell:focused, .table-cell:focused{
+    -fx-text-fill: -fx-primary;
+}
+.table-row-cell{
+    -fx-background-color: #7e8c8c;
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color: transparent;
+}.table-row-cell:selected .table-cell{
+    -fx-text-fill: BLACK;
+}
+.table-row-cell:selected {
+    -fx-background-color: derive(#7e8c8c,25.0%);
+    -fx-background-insets: 0.0;
+}
+.chart-legend{
+	-fx-background-color:transparent;
+}
+.table-view > .virtual-flow > .scroll-bar:vertical,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track-background, 
+.table-view > .virtual-flow > .scroll-bar:horizontal,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track-background {
+    -fx-background-color: transparent;
+}
+
+
+

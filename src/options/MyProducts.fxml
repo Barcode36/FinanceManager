@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="630.0" stylesheets="@../resources/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="options.MyProductsController">
+   <children>
+      <TableView fx:id="productsTable" layoutX="12.0" layoutY="14.0" onMouseClicked="#editItemSelected" prefHeight="385.0" prefWidth="334.0">
+        <columns>
+          <TableColumn fx:id="nameColumn" prefWidth="157.0" text="Product name" />
+          <TableColumn fx:id="storeColumn" prefWidth="99.0" text="Store name" />
+            <TableColumn fx:id="priceColumn" prefWidth="76.0" text="Price" />
+        </columns>
+      </TableView>
+      <JFXComboBox fx:id="storeComboBox" focusColor="BLACK" labelFloat="true" layoutX="220.0" layoutY="417.0" onAction="#changeStore" prefHeight="31.0" prefWidth="128.0" promptText="Store name" />
+      <JFXButton fx:id="backBtn" layoutX="547.0" layoutY="469.0" onAction="#backButtonPushed" text="Back" />
+      <JFXButton fx:id="addBtn" layoutX="359.0" layoutY="160.0" onAction="#addProductPushed" prefHeight="37.0" prefWidth="147.0" text="Add product">
+         <graphic>
+            <FontAwesomeIconView glyphName="CART_PLUS" size="20" />
+         </graphic>
+      </JFXButton>
+      <JFXTextField fx:id="productName" focusColor="BLACK" labelFloat="true" layoutX="359.0" layoutY="14.0" prefHeight="31.0" prefWidth="147.0" promptText="Product name" />
+      <JFXTextField fx:id="storeName" focusColor="BLACK" labelFloat="true" layoutX="359.0" layoutY="64.0" prefHeight="31.0" prefWidth="147.0" promptText="Store name" />
+      <JFXTextField fx:id="price" focusColor="BLACK" labelFloat="true" layoutX="359.0" layoutY="115.0" onAction="#addProductPushed" prefHeight="31.0" prefWidth="153.0" promptText="Price" />
+      <JFXButton fx:id="deleteBtn" layoutX="14.0" layoutY="414.0" onAction="#deleteButtonPushed" prefHeight="37.0" prefWidth="147.0" text="Delete product">
+         <graphic>
+            <FontAwesomeIconView glyphName="TRASH" size="18" />
+         </graphic>
+      </JFXButton>
+      <JFXButton fx:id="editBtn" layoutX="359.0" layoutY="207.0" onAction="#editButton" prefHeight="37.0" prefWidth="147.0" text="Edit product" />
+      <JFXTextField fx:id="productNameEdit" focusColor="BLACK" labelFloat="true" layoutX="359.0" layoutY="267.0" prefHeight="31.0" prefWidth="147.0" promptText="Product name" />
+      <JFXTextField fx:id="storeNameEdit" focusColor="BLACK" labelFloat="true" layoutX="359.0" layoutY="317.0" prefHeight="31.0" prefWidth="147.0" promptText="Store name" />
+      <JFXTextField fx:id="priceEdit" focusColor="BLACK" labelFloat="true" layoutX="359.0" layoutY="368.0" onAction="#saveButtonPushed" prefHeight="31.0" prefWidth="147.0" promptText="Price" />
+      <JFXButton fx:id="saveBtn" layoutX="431.0" layoutY="414.0" onAction="#saveButtonPushed" text="Save">
+         <graphic>
+            <FontAwesomeIconView glyphName="SAVE" size="18" />
+         </graphic>
+      </JFXButton>
+      <JFXButton fx:id="clearBtn" layoutX="359.0" layoutY="414.0" onAction="#clearButtonPushed" text="Clear" />
+   </children>
+</AnchorPane>
