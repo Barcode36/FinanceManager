@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -50,7 +51,6 @@ public class MainStageController implements Initializable {
 	private JFXComboBox<String> monthBox;
 	private int monthNumber = 0;
 	private int numberOfDaysInMonth = 0;
-	private double sumOfSpendingsInMonth = 0;
 	private double monthSum = 0;
 	@FXML
 	private Label firstLabel;
@@ -60,9 +60,9 @@ public class MainStageController implements Initializable {
 	private JFXTextField firstField;
 	@FXML
 	private JFXTextField secondField;
-	XYChart.Series dailySpendingsChart = new XYChart.Series<>();
-	XYChart.Series monthlySpendingsChart = new XYChart.Series<>();
-	ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
+	private XYChart.Series dailySpendingsChart = new XYChart.Series<>();
+	private XYChart.Series monthlySpendingsChart = new XYChart.Series<>();
+	private ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
 
 	public void initializeDrawer() {
 
@@ -93,17 +93,19 @@ public class MainStageController implements Initializable {
 	public XYChart.Series<String, Double> loadMonthlySpendings() throws SQLException {
 		monthlySpendingsChart.getData().clear();
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		Double monthSpendings = null;
 		String monthName = null;
+		String sql = "SELECT*FROM myAccount WHERE userID=?";
 		day.setLabel("Month");
 
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
-
-			resultSet = statement.executeQuery("SELECT * FROM myAccount WHERE userID= " + LoginController.userID);
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setInt(1, LoginController.userID);
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
 				monthSpendings = resultSet.getDouble("spendings");
@@ -119,8 +121,8 @@ public class MainStageController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 
@@ -131,27 +133,27 @@ public class MainStageController implements Initializable {
 	public XYChart.Series<String, Double> loadDailySpendings() throws SQLException {
 		monthlySpendingsChart.getData().clear();
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		String dayOfMonth = null;
 		int dayNumb = 0;
 		double spentInTheDay = 0;
 		day.setLabel("Day");
+		String sql = "SELECT*FROM dailySpendings WHERE userID=? AND theMonth=? AND theYear=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
-
-			resultSet = statement.executeQuery("SELECT * FROM dailySpendings WHERE userID= " + LoginController.userID
-					+ " AND theMonth= " + monthNumber + " AND theYear= " + LocalDate.now().getYear());
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setInt(1, LoginController.userID);
+			preparedStatement.setInt(2, monthNumber);
+			preparedStatement.setInt(3, LocalDate.now().getYear());
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
-				sumOfSpendingsInMonth += resultSet.getDouble("sumOfSpendings");
 				dayNumb = resultSet.getInt("theDay");
 				dayOfMonth = String.valueOf(dayNumb);
-
 				spentInTheDay = resultSet.getDouble("sumOfSpendings");
-
 				dailySpendingsChart.getData().add(new XYChart.Data(dayOfMonth, spentInTheDay));
 			}
 
@@ -160,8 +162,8 @@ public class MainStageController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 
@@ -171,34 +173,27 @@ public class MainStageController implements Initializable {
 
 	public ObservableList<PieChart.Data> loadBudget(String monthName) throws SQLException {
 		Connection conn = null;
-		Statement statement = null;
-		Statement statement2 = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		ResultSet resultSet2 = null;
 		double monthSpendings = 0;
+		double monthBudget = 0;
 		monthSum = 0;
-		String query1 = "SELECT currentBalance FROM myAccount WHERE monthYear= '" + monthName + "/"
-				+ LocalDate.now().getYear() + "' AND userID= " + LoginController.userID;
-		String query2 = "SELECT spendings FROM myAccount WHERE monthYear= '" + monthName + "/"
-				+ LocalDate.now().getYear() + "' AND userID= " + LoginController.userID;
+		String monthYear = monthName + "/" + LocalDate.now().getYear();
+		String sql = "SELECT currentBalance, spendings FROM myAccount WHERE monthYear=? AND userID=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
-			statement2 = (Statement) conn.createStatement();
-
-			resultSet = statement.executeQuery(query1);
-			resultSet2 = statement2.executeQuery(query2);
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setString(1, monthYear);
+			preparedStatement.setInt(2, LoginController.userID);
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
 
-				double monthBudget = resultSet.getDouble("currentBalance");
+				monthBudget = resultSet.getDouble("currentBalance");
 				data.add(new PieChart.Data("Your balance (" + monthBudget + ")", monthBudget));
-
-			}
-			while (resultSet2.next()) {
-
-				monthSpendings = resultSet2.getDouble("spendings");
+				monthSpendings = resultSet.getDouble("spendings");
 				monthSum = monthSpendings;
 				data.add(new PieChart.Data("Your spendings (" + monthSpendings + ")", monthSpendings));
 
@@ -209,14 +204,10 @@ public class MainStageController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
-			if (resultSet2 != null)
-				resultSet2.close();
-			if (statement2 != null)
-				statement2.close();
 
 		}
 		return data;
@@ -233,18 +224,18 @@ public class MainStageController implements Initializable {
 	public void refreshButtonPushed(ActionEvent event) throws SQLException {
 		changeMonthChart();
 		calculateAverageDailySpendingsYear();
-		loadDailySpendings();
 	}
 
 	public void changeMonthChart() throws SQLException {
 		String selectedMonth = monthBox.getValue();
 		selectedMonth = selectedMonth.toLowerCase();
 		selectedMonth = selectedMonth.substring(0, 1).toUpperCase() + selectedMonth.substring(1);
-		budgetChart.getData().clear();
 		data.clear();
+		budgetChart.getData().clear();
 		budgetChart.setData(loadBudget(selectedMonth));
 		budgetChart.setTitle(selectedMonth);
 		firstLabel.setText("Your average daily spendings in " + selectedMonth + ":");
+		monthToMonthChart.setTitle("Your daily spendings in " + monthBox.getValue());
 		switch (selectedMonth) {
 		case ("January"):
 			monthNumber = 1;
@@ -300,6 +291,7 @@ public class MainStageController implements Initializable {
 			break;
 		}
 		calculateDailySpendings();
+		showDailySpendings();
 
 	}
 
@@ -310,18 +302,20 @@ public class MainStageController implements Initializable {
 	public void calculateAverageDailySpendingsYear() throws SQLException {
 		double sumOfSpendingsInYear = 0;
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		String sql = "SELECT SUM(sumOfSpendings) FROM dailySpendings WHERE theYear=? and userID=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
-
-			resultSet = statement
-					.executeQuery("SELECT * FROM dailySpendings WHERE theYear= " + LocalDate.now().getYear());
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setInt(1, LocalDate.now().getYear());
+			preparedStatement.setInt(2, LoginController.userID);
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
-				sumOfSpendingsInYear += resultSet.getDouble("sumOfSpendings");
+				sumOfSpendingsInYear = resultSet.getDouble("SUM(sumOfSpendings)");
 			}
 
 		} catch (Exception e) {
@@ -329,8 +323,8 @@ public class MainStageController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 
@@ -341,6 +335,7 @@ public class MainStageController implements Initializable {
 	public void showDailySpendings() throws SQLException {
 		monthToMonthChart.setTitle("Your daily spendings in " + monthBox.getValue());
 		monthToMonthChart.getData().clear();
+		dailySpendingsChart.getData().clear();
 		monthToMonthChart.getData().addAll(loadDailySpendings());
 	}
 
@@ -361,18 +356,10 @@ public class MainStageController implements Initializable {
 			e1.printStackTrace();
 		}
 		try {
-			monthToMonthChart.getData().addAll(loadDailySpendings());
-			monthToMonthChart.setTitle("Your daily spendings in " + monthName);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		try {
 			calculateAverageDailySpendingsYear();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		calculateDailySpendings();
-
 	}
 
 }

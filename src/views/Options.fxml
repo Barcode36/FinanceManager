@@ -6,32 +6,32 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="160.0" stylesheets="@../resources/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.OptionsController">
    <children>
-      <JFXButton contentDisplay="TOP" onAction="#addReceipt" prefHeight="150.0" prefWidth="191.0" text="Add new receipt">
+      <JFXButton contentDisplay="TOP" onAction="#addReceipt" prefHeight="150.0" prefWidth="191.0" style="-fx-border-radius: 0px;" text="Add new receipt">
          <graphic>
             <FontAwesomeIconView glyphName="BARCODE" size="22" />
          </graphic>
       </JFXButton>
-      <JFXButton contentDisplay="TOP" layoutX="10.0" layoutY="10.0" onAction="#showProducts" prefHeight="150.0" prefWidth="191.0" text="Show my products">
+      <JFXButton contentDisplay="TOP" layoutX="10.0" layoutY="10.0" onAction="#showProducts" prefHeight="150.0" prefWidth="191.0" style="-fx-border-radius: 0px;" text="Show my products">
          <graphic>
             <FontAwesomeIconView glyphName="SHOPPING_CART" size="22" />
          </graphic>
       </JFXButton>
-      <JFXButton contentDisplay="TOP" layoutX="10.0" layoutY="10.0" onAction="#showReceipts" prefHeight="150.0" prefWidth="191.0" text="Show my receipts">
+      <JFXButton contentDisplay="TOP" layoutX="10.0" layoutY="10.0" onAction="#showReceipts" prefHeight="150.0" prefWidth="191.0" style="-fx-border-radius: 0px;" text="Show my receipts">
          <graphic>
             <FontAwesomeIconView glyphName="SHOPPING_BAG" size="22" />
          </graphic>
       </JFXButton>
-      <JFXButton contentDisplay="TOP" layoutX="10.0" layoutY="122.0" onAction="#manageBalance" prefHeight="150.0" prefWidth="191.0" text="Manage balance">
+      <JFXButton contentDisplay="TOP" layoutX="10.0" layoutY="122.0" onAction="#manageBalance" prefHeight="150.0" prefWidth="191.0" style="-fx-border-radius: 0px;" text="Manage balance">
          <graphic>
             <FontAwesomeIconView glyphName="MONEY" size="22" />
          </graphic>
       </JFXButton>
-      <JFXButton contentDisplay="TOP" layoutX="10.0" layoutY="95.0" onAction="#logout" prefHeight="150.0" prefWidth="191.0" text="Change user">
+      <JFXButton contentDisplay="TOP" layoutX="10.0" layoutY="95.0" onAction="#logout" prefHeight="150.0" prefWidth="191.0" style="-fx-border-radius: 0px;" text="Change user">
          <graphic>
             <FontAwesomeIconView glyphName="USERS" size="22" />
          </graphic>
       </JFXButton>
-      <JFXButton contentDisplay="TOP" layoutX="10.0" layoutY="95.0" onAction="#exit" prefHeight="150.0" prefWidth="191.0" text="Exit">
+      <JFXButton contentDisplay="TOP" layoutX="10.0" layoutY="95.0" onAction="#exit" prefHeight="150.0" prefWidth="191.0" style="-fx-border-radius: 0px;" text="Exit">
          <graphic>
             <FontAwesomeIconView glyphName="SIGN_OUT" size="22" />
          </graphic>

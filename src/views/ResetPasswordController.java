@@ -11,9 +11,7 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
-import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
-import com.mysql.jdbc.Statement;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,7 +23,7 @@ import security.PasswordGen;
 public class ResetPasswordController implements Initializable {
 
 	@FXML
-	private JFXTextArea question;
+	private JFXTextField question;
 
 	@FXML
 	private JFXTextField answerField;
@@ -106,14 +104,16 @@ public class ResetPasswordController implements Initializable {
 
 	public void loadData() throws SQLException {
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		String sql = "SELECT*FROM users WHERE userName=?";
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setString(1, nameField.getText());
 
-			resultSet = statement.executeQuery("SELECT*FROM users WHERE userName= '" + nameField.getText() + "'");
-
+			resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
 				validName++;
 				answer = resultSet.getString("helpAnswer");
@@ -125,8 +125,8 @@ public class ResetPasswordController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 
@@ -137,7 +137,8 @@ public class ResetPasswordController implements Initializable {
 		Connection conn = null;
 		PreparedStatement preparedStatement = null;
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
 			String sql = "UPDATE users set password=? " + "WHERE userName=?";
 
 			preparedStatement = conn.prepareStatement(sql);

@@ -3,6 +3,7 @@ package options;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -92,7 +93,7 @@ public class AddReceiptController implements Initializable {
 	private TableColumn<Products, Double> priceReceiptColumn;
 	ObservableList<Products> receiptList = FXCollections.observableArrayList();
 	ObservableList<Products> productsList = FXCollections.observableArrayList();
-	private double fixedQuantity = 1;
+	private final double fixedQuantity = 1;
 	private double totalPriceValue = 0;
 	private double currentBalanceDB = 0;
 	private double spendingsDB = 0;
@@ -105,8 +106,9 @@ public class AddReceiptController implements Initializable {
 		productsAdd = yourProductsTable.getSelectionModel().getSelectedItem();
 		String amountInput = null;
 		amountInput = amount.getText();
-		if (productsAdd != null) {
-			if (amountInput != null && amountInput.matches("[,.0-9]+")
+		if (productsAdd != null && amountInput != null) {
+			amountInput = amountInput.replaceAll(",", ".");
+			if (amountInput.matches("[,.0-9]+")
 					&& (amountInput.matches("\\d*\\.?\\d*") || amountInput.matches("\\d"))) {
 				productsAdd.setQuantity(Double.parseDouble(amountInput));
 				receiptsTable.getItems().add(productsAdd);
@@ -117,6 +119,8 @@ public class AddReceiptController implements Initializable {
 			} else {
 				amount.getStyleClass().add("invalid-input");
 			}
+		} else {
+			amount.getStyleClass().add("invalid-input");
 		}
 	}
 
@@ -171,12 +175,16 @@ public class AddReceiptController implements Initializable {
 			storeName.getStyleClass().add("invalid-input");
 
 		}
-		if (price != null && price.matches("[,.0-9]+") && price.matches("\\d*\\.?\\d*") || price.matches("\\d")) {
-			priceField.getStyleClass().add("valid-input");
+		if (price != null) {
+			if (price.matches("[,.0-9]+") && price.matches("\\d*\\.?\\d*") || price.matches("\\d")) {
+				priceField.getStyleClass().add("valid-input");
+			} else {
+				isValid++;
+				priceField.getStyleClass().add("invalid-input");
+			}
 		} else {
 			isValid++;
 			priceField.getStyleClass().add("invalid-input");
-
 		}
 		if (isValid == 0) {
 			products = new Products(productName.getText(), storeName.getText(), Double.parseDouble(price),
@@ -195,9 +203,11 @@ public class AddReceiptController implements Initializable {
 	public void deleteProduct(ActionEvent event) {
 		Products products;
 		products = receiptsTable.getSelectionModel().getSelectedItem();
-		receiptsTable.getItems().remove(products);
-		totalPriceValue -= calculateTotalPrice(products.getQuantity(), products.getPrice());
-		totalPrice.setText(String.format("%.2f", totalPriceValue));
+		if (products != null) {
+			receiptsTable.getItems().remove(products);
+			totalPriceValue -= calculateTotalPrice(products.getQuantity(), products.getPrice());
+			totalPrice.setText(String.format("%.2f", totalPriceValue));
+		}
 	}
 
 	public void receiptFinished(ActionEvent event) throws SQLException {
@@ -212,7 +222,6 @@ public class AddReceiptController implements Initializable {
 			JFXDialog dialog = new JFXDialog(pane, content, JFXDialog.DialogTransition.CENTER);
 			JFXButton button = new JFXButton("Okay");
 			button.setOnAction(new EventHandler<ActionEvent>() {
-
 				@Override
 				public void handle(ActionEvent event) {
 					dialog.close();
@@ -226,19 +235,20 @@ public class AddReceiptController implements Initializable {
 			});
 			anchorPane.setEffect(blur);
 		}
+
 		if (!receiptsTable.getItems().isEmpty() && okDate == 0) {
 			String totPrice = totalPrice.getText();
 			String generatedNumberStr = generateReceiptNumber();
 			totPrice = totPrice.replaceAll(",", ".");
 			double priceToDB = Double.valueOf(totPrice);
-			String selectedMonth = String.valueOf(LocalDate.now().getMonth());
+			String selectedMonth = String.valueOf(datePicker.getValue().getMonth());
 			selectedMonth = selectedMonth.toLowerCase();
 			selectedMonth = selectedMonth.substring(0, 1).toUpperCase() + selectedMonth.substring(1);
 			addToMyAccount(selectedMonth, priceToDB);
 			if (budgetExists > 0) {
+				Receipts receiptsToDB;
 				for (Products p : receiptsTable.getItems()) {
-					int idDB = p.getProductID();
-					Receipts receiptsToDB = new Receipts(LoginController.userID, idDB, p.getProductName(),
+					receiptsToDB = new Receipts(LoginController.userID, p.getProductID(), p.getProductName(),
 							p.getStoreName(), p.getQuantity(), p.getPrice(), datePicker.getValue(), generatedNumberStr);
 					receiptsToDB.insertIntoDB();
 				}
@@ -255,15 +265,17 @@ public class AddReceiptController implements Initializable {
 		String monthYear = selectedMonth + "/" + LocalDate.now().getYear();
 		budgetExists = 0;
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		String sql = "SELECT*FROM myAccount WHERE userID= ? AND monthYear= ?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
-
-			resultSet = statement.executeQuery("SELECT*FROM myAccount WHERE userID= " + LoginController.userID
-					+ " AND monthYear= '" + monthYear + "'");
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setInt(1, LoginController.userID);
+			preparedStatement.setString(2, monthYear);
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
 				currentBalanceDB = resultSet.getDouble("currentBalance");
@@ -276,8 +288,8 @@ public class AddReceiptController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 		}
@@ -309,7 +321,7 @@ public class AddReceiptController implements Initializable {
 	}
 
 	public void addToDailySpendings() throws SQLException {
-		DailySpendings dailySpendings;
+		DailySpendings dailySpendings = new DailySpendings();
 		int theDay = datePicker.getValue().getDayOfMonth();
 		int theMonth = datePicker.getValue().getMonthValue();
 		int theYear = datePicker.getValue().getYear();
@@ -318,17 +330,22 @@ public class AddReceiptController implements Initializable {
 		double spendingsInDB = 0;
 		double spendings = Double.parseDouble(spendingsStr);
 		int recordExists = 0;
-		dailySpendings = new DailySpendings(LoginController.userID, spendings, theDay, theMonth, theYear);
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		String sql = "SELECT*FROM dailySpendings WHERE userID=? AND theDay=? AND theMonth=? AND theYear=?";
+		DailySpendings dailySpendingsToDB = new DailySpendings(LoginController.userID, spendings, theDay, theMonth,
+				theYear);
 
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
-
-			resultSet = statement.executeQuery("SELECT*FROM dailySpendings WHERE userID= " + LoginController.userID
-					+ " AND theDay= " + theDay + " AND theMonth= " + theMonth + " AND theYear= " + theYear);
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setInt(1, LoginController.userID);
+			preparedStatement.setInt(2, theDay);
+			preparedStatement.setInt(3, theMonth);
+			preparedStatement.setInt(4, theYear);
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
 				spendingsInDB = resultSet.getDouble("sumOfSpendings");
@@ -340,15 +357,15 @@ public class AddReceiptController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 		}
 		if (!receiptsTable.getItems().isEmpty()) {
 			if (recordExists == 0) {
-				dailySpendings.insertIntoDB();
-			} else {
+				dailySpendingsToDB.insertIntoDB();
+			} else if (recordExists > 0) {
 				dailySpendings.updateSpendings(spendings + spendingsInDB, theDay, theMonth, theYear);
 			}
 		}
@@ -360,15 +377,16 @@ public class AddReceiptController implements Initializable {
 		date = date.replaceAll("-", "");
 		String receiptNumber = date + "-" + number;
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-
+		String sql = "SELECT receiptNumber FROM receipts WHERE userID=? AND receiptNumber=?";
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
-
-			resultSet = statement
-					.executeQuery("SELECT receiptNumber FROM receipts WHERE userID= " + LoginController.userID);
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setInt(1, LoginController.userID);
+			preparedStatement.setString(2, receiptNumber);
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
 				receiptNumber = null;
@@ -380,8 +398,8 @@ public class AddReceiptController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 		}
@@ -392,20 +410,22 @@ public class AddReceiptController implements Initializable {
 	public void changeStore(ActionEvent event) throws SQLException {
 
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		String sql = "SELECT*FROM products WHERE storeName=?";
 		productsList.clear();
 		yourProductsTable.getItems().clear();
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
-
-			resultSet = statement
-					.executeQuery("SELECT*FROM products WHERE storeName= '" + storeComboBox.getValue() + "'");
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setString(1, storeComboBox.getValue());
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
 				Products products = new Products(resultSet.getString("productName"), resultSet.getString("storeName"),
 						resultSet.getDouble("price"), resultSet.getDouble("quantity"));
+				products.setProductID(resultSet.getInt("productID"));
 				productsList.add(products);
 
 			}
@@ -415,8 +435,8 @@ public class AddReceiptController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 
@@ -435,18 +455,20 @@ public class AddReceiptController implements Initializable {
 		Statement statement = null;
 		ResultSet resultSet = null;
 		storeComboBox.getItems().clear();
+		Products loadedProducts;
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
 			statement = (Statement) conn.createStatement();
 
 			resultSet = statement.executeQuery("SELECT*FROM products");
 
 			while (resultSet.next()) {
-				Products products = new Products(resultSet.getString("productName"), resultSet.getString("storeName"),
+				loadedProducts = new Products(resultSet.getString("productName"), resultSet.getString("storeName"),
 						resultSet.getDouble("price"), resultSet.getDouble("quantity"));
-				products.setProductID(resultSet.getInt("productID"));
+				loadedProducts.setProductID(resultSet.getInt("productID"));
 				comboSet.add(resultSet.getString("storeName"));
-				productsList.add(products);
+				productsList.add(loadedProducts);
 
 			}
 			setFilteredList();
@@ -494,11 +516,11 @@ public class AddReceiptController implements Initializable {
 		nameColumn.setCellValueFactory(new PropertyValueFactory<Products, String>("productName"));
 		storeNameColumn.setCellValueFactory(new PropertyValueFactory<Products, String>("storeName"));
 		priceColumn.setCellValueFactory(new PropertyValueFactory<Products, Double>("price"));
-
 		nameReceiptColumn.setCellValueFactory(new PropertyValueFactory<Products, String>("productName"));
 		storeReceiptColumn.setCellValueFactory(new PropertyValueFactory<Products, String>("storeName"));
 		quantityColumn.setCellValueFactory(new PropertyValueFactory<Products, Double>("quantity"));
 		priceReceiptColumn.setCellValueFactory(new PropertyValueFactory<Products, Double>("price"));
+
 		datePicker.setValue(LocalDate.now());
 		try {
 			loadProducts();

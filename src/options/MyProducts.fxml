@@ -41,6 +41,6 @@
             <FontAwesomeIconView glyphName="SAVE" size="18" />
          </graphic>
       </JFXButton>
-      <JFXButton fx:id="clearBtn" layoutX="359.0" layoutY="414.0" onAction="#clearButtonPushed" text="Clear" />
+      <JFXButton fx:id="clearBtn" layoutX="359.0" layoutY="414.0" onAction="#clearButtonPushed" text="Cancel" />
    </children>
 </AnchorPane>

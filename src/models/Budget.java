@@ -75,7 +75,8 @@ public class Budget {
 		Connection conn = null;
 		PreparedStatement preparedStatement = null;
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
 			String sql = "INSERT INTO myAccount(userID,monthYear,currentBalance,spendings,budget)"
 					+ "VALUES(?,?,?,?,?)";
 
@@ -103,7 +104,8 @@ public class Budget {
 		Connection conn = null;
 		PreparedStatement preparedStatement = null;
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
 			String sql = "UPDATE myAccount SET currentBalance=?, spendings=? WHERE monthYear=? ";
 
 			preparedStatement = conn.prepareStatement(sql);

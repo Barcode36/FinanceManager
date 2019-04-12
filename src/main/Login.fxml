@@ -17,12 +17,12 @@
    <children>
       <Pane layoutX="34.0" layoutY="32.0" prefHeight="181.0" prefWidth="254.0">
          <children>
-            <ImageView fitHeight="50.0" fitWidth="60.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="50.0" fitWidth="60.0" layoutX="14.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../Users/BananBanan/Desktop/finanse/finanseIkona.png" />
+                  <Image url="@../resources/finanseIkona.png" />
                </image>
             </ImageView>
-            <Text fill="#00b3ca" layoutX="14.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" text="FinanceManager">
+            <Text fill="#104e51" layoutX="14.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" text="FinanceManager">
                <font>
                   <Font name="Century Gothic" size="28.0" />
                </font>

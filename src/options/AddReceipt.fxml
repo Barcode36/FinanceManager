@@ -19,9 +19,9 @@
    <children>
       <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="539.0" prefWidth="972.0" stylesheets="@../resources/style.css">
          <children>
-            <ImageView fitHeight="60.0" fitWidth="71.0" layoutX="900.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="60.0" fitWidth="71.0" layoutX="903.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../Users/BananBanan/Desktop/finanse/receipt.png" />
+                  <Image url="@../resources/receipt.png" />
                </image>
             </ImageView>
             <JFXButton contentDisplay="RIGHT" layoutX="409.0" layoutY="147.0" onAction="#addProduct" prefHeight="37.0" prefWidth="89.0" text="Add">

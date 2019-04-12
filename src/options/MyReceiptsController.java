@@ -12,7 +12,6 @@ import java.util.ResourceBundle;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
-import com.mysql.jdbc.Statement;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -79,6 +78,7 @@ public class MyReceiptsController implements Initializable {
 			text.setVisible(true);
 			yesBtn.setVisible(true);
 			cancelBtn.setVisible(true);
+			monthPicker.setDisable(true);
 		}
 	}
 
@@ -89,10 +89,12 @@ public class MyReceiptsController implements Initializable {
 		if (receipts != null) {
 			if (numb != null) {
 
+				updateDailySpendings();
 				Connection conn = null;
 				PreparedStatement preparedStatement = null;
 				try {
-					conn = (Connection) DriverManager.getConnection("**");
+					conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false",
+							"root", "!zH?x47Po!c?9");
 					String sql = "DELETE FROM receipts WHERE receiptNumber=? AND userID=?";
 
 					preparedStatement = conn.prepareStatement(sql);
@@ -110,11 +112,11 @@ public class MyReceiptsController implements Initializable {
 					if (conn != null)
 						conn.close();
 				}
-				updateDailySpendings();
 				receiptsList.clear();
 				receiptsTable.getItems().clear();
 				loadReceipts();
 				numberField.setText(null);
+				cancelButtonPushed();
 			} else {
 				numberField.getStyleClass().add("invalid-input");
 			}
@@ -130,16 +132,21 @@ public class MyReceiptsController implements Initializable {
 		int theYear = monthPicker.getValue().getYear();
 		double spendingsInDB = 0;
 		int recordExists = 0;
+		double toDelete = calculateReceiptSum();
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		String sql = "SELECT*FROM dailySpendings WHERE userID=? AND theDay=? AND theMonth=? AND theYear=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
-
-			resultSet = statement.executeQuery("SELECT*FROM dailySpendings WHERE userID= " + LoginController.userID
-					+ " AND theDay= " + theDay + " AND theMonth= " + theMonth + " AND theYear= " + theYear);
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setInt(1, LoginController.userID);
+			preparedStatement.setInt(2, theDay);
+			preparedStatement.setInt(3, theMonth);
+			preparedStatement.setInt(4, theYear);
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
 				spendingsInDB = resultSet.getDouble("sumOfSpendings");
@@ -151,30 +158,31 @@ public class MyReceiptsController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 		}
 		if (recordExists > 0) {
-			dailySpendings.updateSpendings(spendingsInDB - calculateReceiptSum(), theDay, theMonth, theYear);
+			dailySpendings.updateSpendings(spendingsInDB - toDelete, theDay, theMonth, theYear);
 		}
 	}
-
+	
 	public double calculateReceiptSum() throws SQLException {
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-
+		String sql = "SELECT SUM(price) FROM receipts WHERE receiptNumber=? AND userID=?";
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setString(1, numberField.getText());
+			preparedStatement.setInt(2, LoginController.userID);
+			resultSet = preparedStatement.executeQuery();
 
-			resultSet = statement
-					.executeQuery("SELECT*FROM receipts WHERE receiptNumber= '" + numberField.getText() + "'");
-
-			while (resultSet.next()) {
-				sumOfReceipt += resultSet.getDouble("price");
+			if (resultSet.next()) {
+				sumOfReceipt = resultSet.getDouble("SUM(price)");
 			}
 
 		} catch (Exception e) {
@@ -182,8 +190,8 @@ public class MyReceiptsController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 
@@ -197,19 +205,23 @@ public class MyReceiptsController implements Initializable {
 		yesBtn.setVisible(false);
 		cancelBtn.setVisible(false);
 		numberField.getStyleClass().remove("invalid-input");
+		monthPicker.setDisable(false);
 	}
 
 	public void loadReceipts() throws SQLException {
+		receiptsList.clear();
+		receiptsTable.getItems().clear();
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-
+		String sql = "SELECT*FROM receipts WHERE theDay=? AND userID=?";
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
-
-			resultSet = statement.executeQuery(
-					"SELECT*FROM receipts WHERE theDay= '" + getData() + "' AND userID= " + LoginController.userID);
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setDate(1, getData());
+			preparedStatement.setInt(2, LoginController.userID);
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
 				receipts = new Receipts(resultSet.getInt("userID"), resultSet.getInt("productID"),
@@ -225,8 +237,8 @@ public class MyReceiptsController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 

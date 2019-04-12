@@ -39,7 +39,7 @@ public class NewUserController implements Initializable {
 	@FXML
 	public void add(ActionEvent event) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		int isValid = 0;
-		if (nameField.getText().length() < 1 || !nameField.getText().matches("[a-zA-z]+")) {
+		if (nameField.getText().length() < 2 || !nameField.getText().matches("[a-zA-z]+")) {
 			nameField.getStyleClass().add("invalid-input");
 			isValid++;
 		}else {
@@ -87,18 +87,16 @@ public class NewUserController implements Initializable {
 
 	@FXML
 	public void checkPassword(ActionEvent event) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		if (passwordField.getText().length() > 5) {
+		if (passwordField.getText().length() > 4) {
 			if (passwordField.getText().equals(repeatField.getText())) {
 				passwordField.getStyleClass().add("valid-input");
 				repeatField.getStyleClass().add("valid-input");
 				validPassword++;
 			} else {
-				System.out.println("Passwords do not match");
 				passwordField.getStyleClass().add("invalid-input");
 				repeatField.getStyleClass().add("invalid-input");
 			}
 		} else {
-			System.out.println("Password is too short");
 			passwordField.getStyleClass().add("invalid-input");
 		}
 	}

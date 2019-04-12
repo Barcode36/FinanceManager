@@ -12,6 +12,7 @@ public class Main extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+
 	}
 
 	@Override
@@ -24,6 +25,7 @@ public class Main extends Application {
 		primaryStage.setTitle("FinanceManager");
 		primaryStage.setResizable(false);
 		ExpensesIcon.setIcon(primaryStage);
+
 	}
 
 }

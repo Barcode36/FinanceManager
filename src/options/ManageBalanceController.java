@@ -112,14 +112,17 @@ public class ManageBalanceController implements Initializable {
 		editBudgetField.getStyleClass().remove("invalid-input");
 		if (budget != null) {
 			String editBudget = editBudgetField.getText();
-			if (editBudget != null && editBudget.matches("[,.0-9]+")
-					&& (editBudget.matches("\\d*\\.?\\d*") || editBudget.matches("\\d"))) {
+			if (editBudget != null) {
+				editBudget = editBudget.replaceAll(",", ".");
+			}
+			if (editBudget.matches("[,.0-9]+") && (editBudget.matches("\\d*\\.?\\d*") || editBudget.matches("\\d"))) {
 				Double budgetToDB = Double.parseDouble(editBudget);
 				Connection conn = null;
 				PreparedStatement preparedStatement = null;
+				String sql = "UPDATE myAccount SET currentBalance=?, budget=? WHERE ID=? AND userID=?";
 				try {
-					conn = (Connection) DriverManager.getConnection("**");
-					String sql = "UPDATE myAccount SET currentBalance=?, budget=? WHERE ID=? AND userID=?";
+					conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false",
+							"root", "!zH?x47Po!c?9");
 
 					preparedStatement = conn.prepareStatement(sql);
 					preparedStatement.setDouble(1, budgetToDB - budget.getSpendings());
@@ -141,7 +144,7 @@ public class ManageBalanceController implements Initializable {
 				saveBtn.setVisible(false);
 				budgetList.clear();
 				budgetTable.getItems().clear();
-				loadProducts();
+				loadBudget();
 			} else {
 				editBudgetField.getStyleClass().add("invalid-input");
 			}
@@ -192,7 +195,7 @@ public class ManageBalanceController implements Initializable {
 					budgetExists = 0;
 					budgetList.clear();
 					budgetTable.getItems().clear();
-					loadProducts();
+					loadBudget();
 
 				}
 
@@ -216,14 +219,19 @@ public class ManageBalanceController implements Initializable {
 	public void checkBudgetMonth() throws SQLException {
 		Connection conn = null;
 		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		String monthYear = monthBox.getValue() + "/" + LocalDate.now().getYear();
+		String sql = "SELECT monthYear FROM myAccount WHERE userID=? AND monthYear=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
 			statement = (Statement) conn.createStatement();
-
-			resultSet = statement.executeQuery("SELECT monthYear FROM myAccount WHERE userID= " + LoginController.userID
-					+ " AND monthYear= '" + monthBox.getValue() + "/" + LocalDate.now().getYear() + "'");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setInt(1, LoginController.userID);
+			preparedStatement.setString(2, monthYear);
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
 				budgetExists++;
@@ -245,13 +253,14 @@ public class ManageBalanceController implements Initializable {
 		editBudget.setDisable(false);
 	}
 
-	public void loadProducts() throws SQLException {
+	public void loadBudget() throws SQLException {
 		Connection conn = null;
 		Statement statement = null;
 		ResultSet resultSet = null;
 
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
 			statement = (Statement) conn.createStatement();
 			resultSet = statement.executeQuery("SELECT*FROM myAccount");
 
@@ -295,7 +304,7 @@ public class ManageBalanceController implements Initializable {
 		budgetColumn.setCellValueFactory(new PropertyValueFactory<Budget, Double>("myBudget"));
 
 		try {
-			loadProducts();
+			loadBudget();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

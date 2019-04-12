@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import main.LoginController;
+
 public class DailySpendings {
 	int userID, theDay, theYear, theMonth;
 	double sumOfSpendings;
@@ -66,13 +68,14 @@ public class DailySpendings {
 		Connection conn = null;
 		PreparedStatement preparedStatement = null;
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
 			String sql = "INSERT INTO dailySpendings(userID,sumOfSpendings,theDay,theMonth,theYear)"
 					+ "VALUES(?,?,?,?,?)";
 
 			preparedStatement = conn.prepareStatement(sql);
 
-			preparedStatement.setInt(1, userID);
+			preparedStatement.setInt(1, LoginController.userID);
 			preparedStatement.setDouble(2, sumOfSpendings);
 			preparedStatement.setInt(3, theDay);
 			preparedStatement.setInt(4, theMonth);
@@ -94,15 +97,17 @@ public class DailySpendings {
 		Connection conn = null;
 		PreparedStatement preparedStatement = null;
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			String sql = "UPDATE dailySpendings SET sumOfSpendings=? WHERE theDay=? AND theMonth=? AND theYear=?";
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			String sql = "UPDATE dailySpendings SET sumOfSpendings=? WHERE userID=? AND theDay=? AND theMonth=? AND theYear=?";
 
 			preparedStatement = conn.prepareStatement(sql);
 
 			preparedStatement.setDouble(1, spendings);
-			preparedStatement.setInt(2, day);
-			preparedStatement.setInt(3, month);
-			preparedStatement.setInt(4, year);
+			preparedStatement.setInt(2, LoginController.userID);
+			preparedStatement.setInt(3, day);
+			preparedStatement.setInt(4, month);
+			preparedStatement.setInt(5, year);
 
 			preparedStatement.executeUpdate();
 

@@ -96,12 +96,16 @@ public class MyProductsController implements Initializable {
 			storeName.getStyleClass().add("invalid-input");
 
 		}
-		if (priceStr != null && priceStr.matches("[,.0-9]+")) {
-			price.getStyleClass().add("valid-input");
+		if (priceStr != null) {
+			if (priceStr.matches("[,.0-9]+") && priceStr.matches("\\d*\\.?\\d*") || priceStr.matches("\\d")) {
+				price.getStyleClass().add("valid-input");
+			} else {
+				isValid++;
+				price.getStyleClass().add("invalid-input");
+			}
 		} else {
 			isValid++;
 			price.getStyleClass().add("invalid-input");
-
 		}
 		if (isValid == 0) {
 			Products products = new Products(productName.getText(), storeName.getText(), Double.parseDouble(priceStr),
@@ -140,22 +144,25 @@ public class MyProductsController implements Initializable {
 	}
 
 	public void changeStore(ActionEvent event) throws SQLException {
+		Products products;
 		productsList.clear();
 		productsTable.getItems().clear();
 		Connection conn = null;
-		Statement statement = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		String sql = "SELECT*FROM products WHERE storeName=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
-			statement = (Statement) conn.createStatement();
-
-			resultSet = statement
-					.executeQuery("SELECT*FROM products WHERE storeName= '" + storeComboBox.getValue() + "'");
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setString(1, storeComboBox.getValue());
+			resultSet = preparedStatement.executeQuery();
 
 			while (resultSet.next()) {
-				Products products = new Products(resultSet.getString("productName"), resultSet.getString("storeName"),
+				products = new Products(resultSet.getString("productName"), resultSet.getString("storeName"),
 						resultSet.getDouble("price"), resultSet.getDouble("quantity"));
+				products.setProductID(resultSet.getInt("productID"));
 				productsList.add(products);
 
 			}
@@ -166,8 +173,8 @@ public class MyProductsController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 
@@ -183,7 +190,8 @@ public class MyProductsController implements Initializable {
 			Connection conn = null;
 			PreparedStatement preparedStatement = null;
 			try {
-				conn = (Connection) DriverManager.getConnection("**");
+				conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false",
+						"root", "!zH?x47Po!c?9");
 				String sql = "DELETE FROM products WHERE productID=?";
 
 				preparedStatement = conn.prepareStatement(sql);
@@ -214,89 +222,108 @@ public class MyProductsController implements Initializable {
 		addBtn.setDisable(false);
 		deleteBtn.setDisable(false);
 		storeComboBox.setDisable(false);
+		productName.setEditable(true);
+		storeName.setEditable(true);
+		price.setEditable(true);
 	}
 
 	@FXML
 	public void editButton(ActionEvent event) throws SQLException {
 		products = productsTable.getSelectionModel().getSelectedItem();
-		productNameEdit.setText(products.getProductName());
-		storeNameEdit.setText(products.getStoreName());
-		priceEdit.setText(String.valueOf(products.getPrice()));
+		if (products != null) {
+			productNameEdit.setText(products.getProductName());
+			storeNameEdit.setText(products.getStoreName());
+			priceEdit.setText(String.valueOf(products.getPrice()));
 
-		saveBtn.setVisible(true);
-		clearBtn.setVisible(true);
-		productNameEdit.setVisible(true);
-		storeNameEdit.setVisible(true);
-		priceEdit.setVisible(true);
-		productName.setEditable(false);
-		storeName.setEditable(false);
-		price.setEditable(false);
-		deleteBtn.setDisable(true);
-		addBtn.setDisable(true);
-		storeComboBox.setDisable(true);
+			saveBtn.setVisible(true);
+			clearBtn.setVisible(true);
+			productNameEdit.setVisible(true);
+			storeNameEdit.setVisible(true);
+			priceEdit.setVisible(true);
+			productName.setEditable(false);
+			storeName.setEditable(false);
+			price.setEditable(false);
+			deleteBtn.setDisable(true);
+			addBtn.setDisable(true);
+			storeComboBox.setDisable(true);
 
+		}
 	}
 
 	@FXML
 	public void saveButtonPushed(ActionEvent event) throws SQLException {
-
-		if (products != null) {
-			Connection conn = null;
-			PreparedStatement preparedStatement = null;
-			try {
-				conn = (Connection) DriverManager.getConnection("**");
-				String sql = "UPDATE products SET productName=?, storeName=?, price=? WHERE productID=?";
-
-				preparedStatement = conn.prepareStatement(sql);
-				preparedStatement.setString(1, productNameEdit.getText());
-				preparedStatement.setString(2, storeNameEdit.getText());
-				preparedStatement.setDouble(3, Double.parseDouble(priceEdit.getText()));
-				preparedStatement.setInt(4, products.getProductID());
-				preparedStatement.executeUpdate();
-
-			} catch (Exception e) {
-				System.err.println(e.getMessage());
-			} finally {
-				if (preparedStatement != null)
-					preparedStatement.close();
-				if (conn != null)
-					conn.close();
-			}
-			productsTable.getItems().clear();
-			productsList.clear();
-			loadProducts();
+		String priceEditToDB = priceEdit.getText();
+		priceEdit.getStyleClass().remove("valid-input");
+		if (priceEditToDB != null) {
+			priceEditToDB = priceEditToDB.replace(',', '.');
 		}
 
-		saveBtn.setVisible(false);
-		clearBtn.setVisible(false);
-		productNameEdit.setVisible(false);
-		storeNameEdit.setVisible(false);
-		priceEdit.setVisible(false);
-		productName.setEditable(true);
-		storeName.setEditable(true);
-		price.setEditable(true);
-		editBtn.setDisable(true);
-		deleteBtn.setDisable(false);
-		addBtn.setDisable(false);
-		storeComboBox.setDisable(false);
+		if (products != null) {
+			if (priceEditToDB != null) {
+				if (priceEditToDB.matches("[,.0-9]+") && priceEditToDB.matches("\\d*\\.?\\d*")
+						|| priceEditToDB.matches("\\d")) {
+
+					Connection conn = null;
+					PreparedStatement preparedStatement = null;
+					try {
+						conn = (Connection) DriverManager.getConnection(
+								"jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root", "!zH?x47Po!c?9");
+						String sql = "UPDATE products SET productName=?, storeName=?, price=? WHERE productID=?";
+
+						preparedStatement = conn.prepareStatement(sql);
+						preparedStatement.setString(1, productNameEdit.getText());
+						preparedStatement.setString(2, storeNameEdit.getText());
+						preparedStatement.setDouble(3, Double.parseDouble(priceEditToDB));
+						preparedStatement.setInt(4, products.getProductID());
+						preparedStatement.executeUpdate();
+
+					} catch (Exception e) {
+						System.err.println(e.getMessage());
+					} finally {
+						if (preparedStatement != null)
+							preparedStatement.close();
+						if (conn != null)
+							conn.close();
+					}
+					productsTable.getItems().clear();
+					productsList.clear();
+					loadProducts();
+
+					saveBtn.setVisible(false);
+					clearBtn.setVisible(false);
+					productNameEdit.setVisible(false);
+					storeNameEdit.setVisible(false);
+					priceEdit.setVisible(false);
+					productName.setEditable(true);
+					storeName.setEditable(true);
+					price.setEditable(true);
+					editBtn.setDisable(true);
+					deleteBtn.setDisable(false);
+					addBtn.setDisable(false);
+					storeComboBox.setDisable(false);
+				} else {
+					priceEdit.getStyleClass().add("invalid-input");
+				}
+			}
+		}
 	}
 
 	public void loadProducts() throws SQLException {
+		Products products;
 		Connection conn = null;
 		Statement statement = null;
 		ResultSet resultSet = null;
-		if (!storeComboBox.getItems().isEmpty()) {
-			storeComboBox.getItems().removeAll(comboSet);
-		}
+		storeComboBox.getItems().clear();
 
 		try {
-			conn = (Connection) DriverManager.getConnection("**");
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
 			statement = (Statement) conn.createStatement();
 
 			resultSet = statement.executeQuery("SELECT*FROM products");
 
 			while (resultSet.next()) {
-				Products products = new Products(resultSet.getString("productName"), resultSet.getString("storeName"),
+				products = new Products(resultSet.getString("productName"), resultSet.getString("storeName"),
 						resultSet.getDouble("price"), resultSet.getDouble("quantity"));
 				products.setProductID(resultSet.getInt("productID"));
 				productsList.add(products);

@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -15,7 +16,6 @@ import java.util.prefs.Preferences;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
-import com.mysql.jdbc.Statement;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -101,15 +101,16 @@ public class LoginController implements Initializable {
 
 	public void loadData() throws SQLException {
 		Connection conn = null;
-		Statement statement = null;
 		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+		String sql = "SELECT*FROM users WHERE userName= ?";
 		try {
-			conn = (Connection) DriverManager.getConnection(
-					"**");
-			statement = (Statement) conn.createStatement();
-
-			resultSet = statement.executeQuery("SELECT*FROM users WHERE userName= '" + nameTextField.getText() + "'");
-
+			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
+					"!zH?x47Po!c?9");
+			preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setString(1, nameTextField.getText());
+			resultSet = preparedStatement.executeQuery();
+			
 			while (resultSet.next()) {
 				isValid++;
 				userID = resultSet.getInt("userID");
@@ -120,8 +121,8 @@ public class LoginController implements Initializable {
 		} finally {
 			if (conn != null)
 				conn.close();
-			if (statement != null)
-				statement.close();
+			if (preparedStatement != null)
+				preparedStatement.close();
 			if (resultSet != null)
 				resultSet.close();
 
