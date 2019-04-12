@@ -93,8 +93,7 @@ public class MyReceiptsController implements Initializable {
 				Connection conn = null;
 				PreparedStatement preparedStatement = null;
 				try {
-					conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false",
-							"root", "!zH?x47Po!c?9");
+					conn = (Connection) DriverManager.getConnection("**");
 					String sql = "DELETE FROM receipts WHERE receiptNumber=? AND userID=?";
 
 					preparedStatement = conn.prepareStatement(sql);
@@ -139,8 +138,7 @@ public class MyReceiptsController implements Initializable {
 		String sql = "SELECT*FROM dailySpendings WHERE userID=? AND theDay=? AND theMonth=? AND theYear=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, LoginController.userID);
 			preparedStatement.setInt(2, theDay);
@@ -174,8 +172,7 @@ public class MyReceiptsController implements Initializable {
 		ResultSet resultSet = null;
 		String sql = "SELECT SUM(price) FROM receipts WHERE receiptNumber=? AND userID=?";
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setString(1, numberField.getText());
 			preparedStatement.setInt(2, LoginController.userID);
@@ -216,8 +213,7 @@ public class MyReceiptsController implements Initializable {
 		ResultSet resultSet = null;
 		String sql = "SELECT*FROM receipts WHERE theDay=? AND userID=?";
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setDate(1, getData());
 			preparedStatement.setInt(2, LoginController.userID);

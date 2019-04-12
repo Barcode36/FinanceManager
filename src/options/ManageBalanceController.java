@@ -121,8 +121,7 @@ public class ManageBalanceController implements Initializable {
 				PreparedStatement preparedStatement = null;
 				String sql = "UPDATE myAccount SET currentBalance=?, budget=? WHERE ID=? AND userID=?";
 				try {
-					conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false",
-							"root", "!zH?x47Po!c?9");
+					conn = (Connection) DriverManager.getConnection("**");
 
 					preparedStatement = conn.prepareStatement(sql);
 					preparedStatement.setDouble(1, budgetToDB - budget.getSpendings());
@@ -225,8 +224,7 @@ public class ManageBalanceController implements Initializable {
 		String sql = "SELECT monthYear FROM myAccount WHERE userID=? AND monthYear=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			statement = (Statement) conn.createStatement();
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, LoginController.userID);
@@ -259,8 +257,7 @@ public class ManageBalanceController implements Initializable {
 		ResultSet resultSet = null;
 
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			statement = (Statement) conn.createStatement();
 			resultSet = statement.executeQuery("SELECT*FROM myAccount");
 

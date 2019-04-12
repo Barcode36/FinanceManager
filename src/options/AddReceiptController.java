@@ -270,8 +270,7 @@ public class AddReceiptController implements Initializable {
 		String sql = "SELECT*FROM myAccount WHERE userID= ? AND monthYear= ?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, LoginController.userID);
 			preparedStatement.setString(2, monthYear);
@@ -338,8 +337,7 @@ public class AddReceiptController implements Initializable {
 				theYear);
 
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, LoginController.userID);
 			preparedStatement.setInt(2, theDay);
@@ -381,8 +379,7 @@ public class AddReceiptController implements Initializable {
 		ResultSet resultSet = null;
 		String sql = "SELECT receiptNumber FROM receipts WHERE userID=? AND receiptNumber=?";
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, LoginController.userID);
 			preparedStatement.setString(2, receiptNumber);
@@ -416,8 +413,7 @@ public class AddReceiptController implements Initializable {
 		productsList.clear();
 		yourProductsTable.getItems().clear();
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setString(1, storeComboBox.getValue());
 			resultSet = preparedStatement.executeQuery();
@@ -457,8 +453,7 @@ public class AddReceiptController implements Initializable {
 		storeComboBox.getItems().clear();
 		Products loadedProducts;
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			statement = (Statement) conn.createStatement();
 
 			resultSet = statement.executeQuery("SELECT*FROM products");

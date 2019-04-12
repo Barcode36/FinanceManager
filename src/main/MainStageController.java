@@ -101,8 +101,7 @@ public class MainStageController implements Initializable {
 		day.setLabel("Month");
 
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, LoginController.userID);
 			resultSet = preparedStatement.executeQuery();
@@ -142,8 +141,7 @@ public class MainStageController implements Initializable {
 		String sql = "SELECT*FROM dailySpendings WHERE userID=? AND theMonth=? AND theYear=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, LoginController.userID);
 			preparedStatement.setInt(2, monthNumber);
@@ -182,8 +180,7 @@ public class MainStageController implements Initializable {
 		String sql = "SELECT currentBalance, spendings FROM myAccount WHERE monthYear=? AND userID=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setString(1, monthYear);
 			preparedStatement.setInt(2, LoginController.userID);
@@ -307,8 +304,7 @@ public class MainStageController implements Initializable {
 		String sql = "SELECT SUM(sumOfSpendings) FROM dailySpendings WHERE theYear=? and userID=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setInt(1, LocalDate.now().getYear());
 			preparedStatement.setInt(2, LoginController.userID);

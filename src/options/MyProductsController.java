@@ -153,8 +153,7 @@ public class MyProductsController implements Initializable {
 		String sql = "SELECT*FROM products WHERE storeName=?";
 
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setString(1, storeComboBox.getValue());
 			resultSet = preparedStatement.executeQuery();
@@ -190,8 +189,7 @@ public class MyProductsController implements Initializable {
 			Connection conn = null;
 			PreparedStatement preparedStatement = null;
 			try {
-				conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false",
-						"root", "!zH?x47Po!c?9");
+				conn = (Connection) DriverManager.getConnection("**");
 				String sql = "DELETE FROM products WHERE productID=?";
 
 				preparedStatement = conn.prepareStatement(sql);
@@ -266,8 +264,7 @@ public class MyProductsController implements Initializable {
 					Connection conn = null;
 					PreparedStatement preparedStatement = null;
 					try {
-						conn = (Connection) DriverManager.getConnection(
-								"jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root", "!zH?x47Po!c?9");
+						conn = (Connection) DriverManager.getConnection("**");
 						String sql = "UPDATE products SET productName=?, storeName=?, price=? WHERE productID=?";
 
 						preparedStatement = conn.prepareStatement(sql);
@@ -316,8 +313,7 @@ public class MyProductsController implements Initializable {
 		storeComboBox.getItems().clear();
 
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			statement = (Statement) conn.createStatement();
 
 			resultSet = statement.executeQuery("SELECT*FROM products");

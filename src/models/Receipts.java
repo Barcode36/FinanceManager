@@ -98,8 +98,7 @@ public class Receipts {
 		Connection conn = null;
 		PreparedStatement preparedStatement = null;
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			String sql = "INSERT INTO receipts (userID,productID,productName,storeName,quantity,price,theDay,receiptNumber)"
 					+ "VALUES(?,?,?,?,?,?,?,?)";
 

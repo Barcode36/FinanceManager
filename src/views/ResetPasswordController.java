@@ -108,8 +108,7 @@ public class ResetPasswordController implements Initializable {
 		ResultSet resultSet = null;
 		String sql = "SELECT*FROM users WHERE userName=?";
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setString(1, nameField.getText());
 
@@ -137,8 +136,7 @@ public class ResetPasswordController implements Initializable {
 		Connection conn = null;
 		PreparedStatement preparedStatement = null;
 		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/expenses?useSSL=false", "root",
-					"!zH?x47Po!c?9");
+			conn = (Connection) DriverManager.getConnection("**");
 			String sql = "UPDATE users set password=? " + "WHERE userName=?";
 
 			preparedStatement = conn.prepareStatement(sql);
