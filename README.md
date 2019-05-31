@@ -3,7 +3,6 @@ Finance manager is a project I developed for myself to track my daily spendings.
 
 The first version of Finance manager allows you to manage your products and receipts in the database. Application was developed mainly to 
 manage your expenses on groceries.
-However I am going to develop additional functionalities in the future. 
 
 In finance manager data is displayed in form of graphs. Those are:
 -spendings in each month
