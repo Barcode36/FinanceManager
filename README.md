@@ -1,5 +1,5 @@
 # FinanceManager
-Finance manager is a project I developed for myself to track my daily spendings. If you have problem with exceeding your monthly budget or you simply want to save up some money Finance manager is for you.
+Finance manager is a project I developed for myself to track my daily spendings in order to better manage my finance.
 
 The first version of Finance manager allows you to manage your products and receipts in the database. Application was developed mainly to 
 manage your expenses on groceries.
